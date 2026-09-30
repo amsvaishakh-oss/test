@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Form M 21 – Interview Sheet</title>
+<style>
+:root{--navy:#0a1a8c;--teal:#40eabc;--sea:#e7edf1;--line:#8aa0b1;--paper:#fff;--ink:#17232d;--ok:#1f6b4a;--no:#a8322b;--soft:#f3f6f8}
+*{box-sizing:border-box}
+body{margin:0;font:14px/1.45 "Segoe UI",Roboto,Arial,sans-serif;color:var(--ink);background:var(--sea);display:flex;min-height:100vh}
+aside{width:270px;background:var(--navy);color:#e9f0f5;padding:16px;display:flex;flex-direction:column;gap:10px;position:sticky;top:0;height:100vh}
+aside h1{font:600 16px Georgia,serif;margin:0 0 2px}
+.logo-side{background:#fff;border-radius:6px;padding:8px 10px}.logo-side img{display:block;width:100%;height:auto}
+.logo-doc{display:block;height:64px;width:auto;margin:0 auto 6px}
+aside small{color:#b4bff0}
+button{font:inherit;cursor:pointer;border:1px solid var(--navy);background:var(--navy);color:#fff;padding:7px 14px;border-radius:4px}
+button.ghost{background:transparent;color:var(--navy)}
+aside button{background:#fff;color:var(--navy);border-color:#fff;font-weight:600}
+aside input{padding:7px;border-radius:4px;border:0;font:inherit}
+#list{overflow:auto;flex:1;display:flex;flex-direction:column;gap:4px}
+.item{padding:8px 10px;border-radius:4px;cursor:pointer;border-left:4px solid transparent}
+.item:hover,.item.on{background:#1b2fa3}
+.item.on{border-left-color:var(--teal)}
+.item b{display:block;font-weight:600}
+.item span{font-size:12px;color:#b4bff0}
+.badge{float:right;font-size:11px;padding:1px 6px;border-radius:9px;background:#fff;color:var(--navy)}
+.badge.a{background:#bfe6d0;color:#12452f}.badge.r{background:#f4c7c3;color:#6d1c17}
+main{flex:1;padding:18px 24px 60px;min-width:0}
+.bar{max-width:900px;margin:0 auto 12px;display:flex;gap:8px;align-items:center}
+.bar .sp{flex:1}.bar .st{color:#4a5f6e;font-size:13px}
+.paper{max-width:900px;margin:0 auto;background:var(--paper);border:1px solid var(--line);padding:20px 24px}
+table{width:100%;border-collapse:collapse}
+td,th{border:1px solid var(--line);padding:6px 8px;vertical-align:top;text-align:left}
+.head td{border-color:var(--ink)}
+.co{text-align:center}
+.co h2{margin:0;font:700 18px Georgia,serif;letter-spacing:.02em}
+.co p{margin:2px 0 0;font-size:12px}
+.meta{font-size:12px;width:170px}
+.meta div{display:flex;justify-content:space-between;gap:6px;align-items:center}
+.meta input{width:96px;text-align:right}
+.note{margin:10px 0;font-size:12px;text-align:center}
+th{background:var(--soft);font-weight:600;font-size:12px}
+td.k{font-weight:600;background:var(--soft);width:26%}
+input,textarea,select{width:100%;font:inherit;color:inherit;border:1px solid transparent;background:transparent;padding:3px 4px;border-radius:3px;resize:none}
+input:hover,textarea:hover,select:hover{border-color:#c9d5dd}
+input:focus,textarea:focus,select:focus{outline:2px solid #4b86ad;background:#fbfdff}
+textarea{min-height:52px;overflow:hidden}
+.sub td.k{width:30%}
+.sec{margin-top:14px}
+.seg{display:inline-flex;border:1px solid var(--navy);border-radius:4px;overflow:hidden}
+.seg label{padding:4px 16px;cursor:pointer;font-weight:600}
+.seg input{display:none}
+.seg input:checked+span{background:var(--navy);color:#fff}
+.seg span{display:block;padding:4px 16px;margin:-4px -16px}
+.decide td.k{width:24%}
+.pick{display:flex;gap:6px}
+.pick.a input:checked+span{background:var(--ok);color:#fff}
+.pick.r input:checked+span{background:var(--no);color:#fff}
+.priv{font-size:11.5px;color:#3d505e;margin:12px 0}
+.empty{max-width:900px;margin:80px auto;text-align:center;color:#4a5f6e}
+.toast{position:fixed;bottom:18px;right:18px;background:var(--navy);color:#fff;padding:8px 14px;border-radius:4px;opacity:0;transition:opacity .2s}
+.toast.on{opacity:1}
+@media(max-width:800px){body{flex-direction:column}aside{width:100%;height:auto;position:static}#list{max-height:180px}}
+@media print{
+  aside,.bar,.toast{display:none!important}
+  body{background:#fff;display:block}main{padding:0}
+  .paper{border:0;padding:0;max-width:none}
+  input,textarea,select{border:0!important}
+  .sec{page-break-inside:avoid}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+<aside>
+  <div class="logo-side"><img src="logo.png" alt="Admiral Marine"></div>
+  <div><h1>Interview Sheets</h1><small>Form M 21 · Admiral Marine Services</small></div>
+  <button id="new">New interview sheet</button>
+  <input id="q" placeholder="Search name, rank or vessel">
+  <div id="list"></div>
+</aside>
+<main>
+  <div class="bar" id="bar" hidden>
+    <button id="save">Save</button>
+    <button class="ghost" id="print">Print / Save as PDF</button>
+    <button class="ghost" id="dup">Duplicate</button>
+    <button class="ghost" id="del">Delete</button>
+    <span class="sp"></span><span class="st" id="st"></span>
+  </div>
+  <div id="form"></div>
+</main>
+<div class="toast" id="toast"></div>
+
+<script>
+const GROUPS = [
+  { rows: [['background','PREVIOUS GENERAL BACKGROUND'],['shiptypes','EXPERIENCE ON DIFFERENT TYPES OF SHIP']] },
+  { rows: [['drydock','DRY DOCK EXP / TAKE OVER / YARD DELIVERY'],['compat','COMPATIBILITY TO PROPOSED VESSEL'],['safety','PERSONAL SAFETY ON BOARD / HSSE'],['seaduties','DUTIES WHILE AT SEA, NAVIGATIONAL WATCH AND GENERAL SHIP BOARD DUTIES OR DUTIES WHILE AT SEA, ENGINE ROOM WATCH AND GENERAL SHIP BOARD DUTIES']] },
+  { rows: [['portduties','DUTIES AT PORT – (DECK) OR DUTIES AT PORT – (ENGINE)'],['regs','KNOWLEDGE OF VARIOUS REGULATIONS – E.g. OIL, GARBAGE, SECURITY, IMO'],['attitude','ATTITUDE / CONFIDENCE / ADAPTABILITY'],['leadership','LEADERSHIP QUALITIES'],['training','TRAINING RECOMMENDATION IF ANY'],['other','ANY OTHER COMMENTS / REMARKS']] }
+];
+const LEVELS = [['Deck Management Level','Cargo Handling and Stowage'],['Engine Management Level','Maintenance and Repair'],['Deck Operational Level','Navigation'],['Engine Operational Level','Marine engineering'],['Deck Rating','Navigational Watch/Seamanship'],['Engine Rating','Boiler Watch/Engineering Watch rating']];
+const H1='HEAD OF MANNING & SOURCING / QHSE SUPERINTENDENT ASSESSMENT AND EVALUATION', H2='MARINE / TECHNICAL SUPERINTENDENT ASSESSMENT AND EVALUATION';
+
+const $ = (s) => document.querySelector(s);
+const esc = (s='') => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let list = [], cur = null, dirty = false;
+
+const blank = () => ({ date: new Date().toISOString().slice(0,10), formDate:'14-03-2025', rev:'00', name:'', rank:'', vessel:'', remarks:'', ref:{company:'',designation:'',contact:'',conduct:'',reasons:''}, seagull:'', seaService:'', ev:{}, decision:'', decisionBy:'', decisionTech:'', reint1:'', reint2:'' });
+
+async function api(method, url, body){
+  const r = await fetch(url,{method,headers:{'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});
+  return r.json();
+}
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');setTimeout(()=>e.classList.remove('on'),1600)}
+
+async function refresh(){ list = await api('GET','/api/interviews'); drawList(); }
+function drawList(){
+  const q = $('#q').value.toLowerCase();
+  $('#list').innerHTML = list.filter(r => [r.name,r.rank,r.vessel].join(' ').toLowerCase().includes(q)).map(r =>
+    `<div class="item ${cur&&cur.id===r.id?'on':''}" data-id="${r.id}">
+      ${r.decision?`<span class="badge ${r.decision==='approved'?'a':'r'}">${r.decision==='approved'?'Approved':'Rejected'}</span>`:''}
+      <b>${esc(r.name)||'Unnamed seafarer'}</b><span>${esc(r.rank)} ${r.vessel?'· '+esc(r.vessel):''}</span></div>`).join('')
+    || '<span style="color:#b4bff0">No sheets yet</span>';
+}
+
+function draw(){
+  if(!cur){ $('#bar').hidden=true; $('#form').innerHTML='<div class="empty"><h2>No sheet open</h2><p>Create a new interview sheet or pick one from the list.</p></div>'; return; }
+  $('#bar').hidden=false;
+  const c = cur, f = (path, v) => `data-f="${path}" value="${esc(v)}"`;
+  const evRows = (g) => g.rows.map(([k,label]) => `<tr><td class="k">${label}</td>
+      <td><textarea data-f="ev.${k}.m">${esc(c.ev[k]?.m||'')}</textarea></td>
+      <td><textarea data-f="ev.${k}.t">${esc(c.ev[k]?.t||'')}</textarea></td></tr>`).join('');
+  const seg = (name, opts, val, cls='') => `<div class="seg ${cls}">${opts.map(o=>`<label><input type="radio" name="${name}" data-f="${name}" value="${o}" ${val===o?'checked':''}><span>${o}</span></label>`).join('')}</div>`;
+  const yn = ['YES','NO'];
+  $('#form').innerHTML = `<div class="paper">
+  <table class="head"><tr>
+    <td class="co"><img class="logo-doc" src="logo.png" alt="Admiral Marine"><h2>ADMIRAL MARINE SERVICES PVT LTD</h2><p>No. 25/12, Lake Area Second Cross Street, Nungambakkam, Chennai-600034<br>RPSL-CHN-022 (Valid till 21st April 2026)</p></td>
+    <td class="meta"><div><b>REV NO:</b><input ${f('rev',c.rev)}></div><div><b>FORM NO:</b><span>M 21</span></div><div><b>DATE:</b><input ${f('formDate',c.formDate)}></div></td>
+  </tr></table>
+  <p class="note">Includes information for seafarers under MSA (Recruitment &amp; Placement of Seafarers Rules-2005)</p>
+
+  <table>
+    <tr><td class="k">NAME OF SEAFARER</td><td colspan="2"><input ${f('name',c.name)} placeholder="Mr. / Capt."></td></tr>
+    <tr><td class="k">RANK</td><td colspan="2"><input ${f('rank',c.rank)}></td></tr>
+    <tr><td class="k">PROPOSED TO JOIN M V / MT</td><td colspan="2"><input ${f('vessel',c.vessel)}></td></tr>
+    <tr><td class="k">INTERVIEW DATE</td><td colspan="2"><input type="date" ${f('date',c.date)}></td></tr>
+    <tr><td class="k">REMARKS</td><td colspan="2"><textarea data-f="remarks">${esc(c.remarks)}</textarea></td></tr>
+    <tr><td class="k" rowspan="5">REFERENCE CHECK</td><td style="width:26%"><b>Company Name</b></td><td><input ${f('ref.company',c.ref.company)}></td></tr>
+    <tr><td><b>Designation</b> (optional)</td><td><input ${f('ref.designation',c.ref.designation)}></td></tr>
+    <tr><td><b>Contact No</b></td><td><input ${f('ref.contact',c.ref.contact)}></td></tr>
+    <tr><td><b>Conduct / Discipline on board</b></td><td><textarea data-f="ref.conduct" style="min-height:34px">${esc(c.ref.conduct)}</textarea></td></tr>
+    <tr><td><b>Reasons for early sign off, if applicable / other remarks</b></td><td><textarea data-f="ref.reasons" style="min-height:34px">${esc(c.ref.reasons)}</textarea></td></tr>
+    <tr><td class="k">SEAGULL TEST (CBT)</td><td colspan="2">${seg('seagull',yn,c.seagull)}</td></tr>
+    <tr><td class="k">TOTAL SEA SERVICE IN LAST RANK / PROPOSED RANK</td><td colspan="2"><textarea data-f="seaService">${esc(c.seaService)}</textarea></td></tr>
+  </table>
+
+  ${GROUPS.map(g=>`<table class="sec"><tr><th style="width:26%">INTERVIEW EVALUATION</th><th>${H1}</th><th>${H2}</th></tr>${evRows(g)}</table>`).join('')}
+
+  <p class="priv">Any of the above personal data of the seafarer shall be used only for processing, recruitment and placement onboard ships. This data shall remain confidential and shall not be released to a third party. If for any reason he is not to be re-employed due to his personal behavior, the same should be disclosed to other companies; if his qualifications meet requirements, he should have the liberty to approach other companies for a job.</p>
+  <p class="priv">Qualification and experience criteria specific to each rank are mentioned in our manual <b>Section 5.24.1</b>; crew selection is finalized on that basis. Seagull CES test has been conducted for our seafarers based on the table below.</p>
+
+  <table style="margin-bottom:14px"><tr><th style="width:60px">S.NO</th><th>LEVEL</th><th>FUNCTION AREA</th></tr>
+    ${LEVELS.map((l,i)=>`<tr><td>${i+1}</td><td>${l[0]}</td><td>${l[1]}</td></tr>`).join('')}</table>
+
+  <table class="decide">
+    <tr><th></th><th>${H1.replace(' ASSESSMENT AND EVALUATION','')}</th><th>SIGNATURE OF MARINE / TECHNICAL SUPERINTENDENT</th></tr>
+    <tr><td class="k">DECISION</td><td colspan="2"><div class="pick ${c.decision==='rejected'?'r':'a'}">
+      <div class="seg pick a"><label><input type="radio" name="decision" data-f="decision" value="approved" ${c.decision==='approved'?'checked':''}><span>Candidate approved</span></label></div>
+      <div class="seg pick r"><label><input type="radio" name="decision" data-f="decision" value="rejected" ${c.decision==='rejected'?'checked':''}><span>Candidate rejected</span></label></div>
+      <button class="ghost" type="button" id="clr" style="border:0">Clear</button></div></td></tr>
+    <tr><td class="k">NAME / SIGNED BY</td><td><input ${f('decisionBy',c.decisionBy)} placeholder="Head of Manning & Sourcing / QHSE Supt."></td><td><input ${f('decisionTech',c.decisionTech)} placeholder="Marine / Technical Supt."></td></tr>
+    <tr><td class="k">RE-INTERVIEW</td><td>${seg('reint1',yn,c.reint1)}</td><td>${seg('reint2',yn,c.reint2)}</td></tr>
+  </table>
+  </div>`;
+  document.querySelectorAll('textarea').forEach(grow);
+  const clr=$('#clr'); if(clr) clr.onclick=()=>{cur.decision='';mark();draw()};
+  $('#st').textContent = c.updatedAt ? 'Last saved ' + new Date(c.updatedAt).toLocaleString() : 'Not saved yet';
+}
+function grow(t){t.style.height='auto';t.style.height=Math.max(t.scrollHeight+2,parseInt(t.style.minHeight)||52)+'px'}
+function setPath(o,p,v){const k=p.split('.');let x=o;k.slice(0,-1).forEach(s=>x=x[s]??={});x[k.at(-1)]=v}
+function mark(){dirty=true;$('#st').textContent='Unsaved changes'}
+
+$('#form').addEventListener('input', e => {
+  const p = e.target.dataset.f; if(!p) return;
+  setPath(cur,p,e.target.value); if(e.target.tagName==='TEXTAREA') grow(e.target); mark();
+});
+$('#form').addEventListener('change', e => { if(e.target.type==='radio'){ setPath(cur,e.target.dataset.f,e.target.value); mark(); if(e.target.name==='decision') draw(); }});
+
+async function saveCur(){
+  if(!cur) return;
+  const r = cur.id ? await api('PUT','/api/interviews/'+cur.id,cur) : await api('POST','/api/interviews',cur);
+  cur = r; dirty=false; await refresh(); draw(); toast('Saved');
+}
+async function open(id){
+  if(dirty && !confirm('Discard unsaved changes?')) return;
+  cur = await api('GET','/api/interviews/'+id); dirty=false; drawList(); draw(); window.scrollTo(0,0);
+}
+$('#new').onclick = () => { if(dirty && !confirm('Discard unsaved changes?')) return; cur = blank(); dirty=false; drawList(); draw(); };
+$('#list').onclick = e => { const i=e.target.closest('.item'); if(i) open(i.dataset.id); };
+$('#q').oninput = drawList;
+$('#save').onclick = saveCur;
+$('#print').onclick = () => window.print();
+$('#dup').onclick = () => { const {id,updatedAt,...rest}=cur; cur={...JSON.parse(JSON.stringify(rest)),name:rest.name+' (copy)',decision:''}; dirty=true; drawList(); draw(); };
+$('#del').onclick = async () => {
+  if(!cur.id){cur=null;dirty=false;draw();return}
+  if(!confirm('Delete this interview sheet permanently?')) return;
+  await api('DELETE','/api/interviews/'+cur.id); cur=null; dirty=false; await refresh(); draw(); toast('Deleted');
+};
+document.addEventListener('keydown', e => { if((e.ctrlKey||e.metaKey)&&e.key==='s'){e.preventDefault();saveCur()} });
+window.addEventListener('beforeunload', e => { if(dirty){e.preventDefault();e.returnValue=''} });
+
+refresh().then(draw);
+</script>
+</body>
+</html>
